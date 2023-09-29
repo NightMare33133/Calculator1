@@ -1,4 +1,4 @@
-# Calculator1>
+>
 
 [toc]
 
@@ -12,7 +12,7 @@
 | 这个作业的目标       | 完成一个具有可视化界面的计算器                               |
 | 其他参考文献         | [Python制作一个科学计算器_python科学计算器_滑稽研究所的博客-CSDN博客](https://blog.csdn.net/weixin_45067072/article/details/118373399?ops_request_misc=%7B%22request%5Fid%22%3A%22169595584216800227441072%22%2C%22scm%22%3A%2220140713.130102334..%22%7D&request_id=169595584216800227441072&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~all~top_positive~default-2-118373399-null-null.142)[python简单计算器异常处理_python-异常处理try_except-CSDN博客](https://blog.csdn.net/weixin_39972151/article/details/110999151?utm_medium=distribute.pc_relevant.none-task-blog-2~default~baidujs_utm_term~default-9-110999151-blog-79569406.235) [tkinter案例_计算器P2逻辑编写_哔哩哔哩_bilibili](https://www.bilibili.com/video/BV1Ma411x76d/?p=2&spm_id_from=333.880.my_history.page.click&vd_source=4f24f3057448527deda5427be06a7763) |
 
-## Gitcode项目地址
+## Gitcode项目地址[NightMare33133/Calculator1 (github.com)](https://github.com/NightMare33133/Calculator1)
 
 ## PSP表格
 
@@ -265,11 +265,35 @@ if result_num.get() == "" and result_outer.get() != "" :
 
 该代码在识别到result_num字符串为空时，可以直接将result_outer同时置空
 
+
+
+将原先杂乱的代码整理好后，分成了计算器类和测试类，以便于后续的调试和调用
+
+```
+class calculator:
+    def __init__(self,root):
+        self.root = root
+        self.root.title("计算器")
+        #root.geometry('450x330')#该尺寸可以在底部显示eval实际执行算术式用于调试
+        self.root.geometry('450x290')
+        self.root.resizable(0,0)#锁住尺寸调整
+```
+
+```
+class Test(unittest.TestCase):
+    def test1(self):
+        root = Tk()
+        c = calculator(root)
+        result_num.set("5+1")
+        result = c.calculation()
+        self.assertEqual(result, '6',"test1 fail")
+```
+
  
 
 ## 单元测试
 
- 
+ 单元测试分别测试了四则运算，科学计算，π的调用，以及除0情况的报错![单元测试](C:\Users\Administrator\Desktop\Calculator\单元测试.png)
 
 | 输入表达式 | 运行结果           |
 | ---------- | ------------------ |
@@ -279,13 +303,21 @@ if result_num.get() == "" and result_outer.get() != "" :
 | π          | 3.141592653589793  |
 | 10/0       | 除数不能为零       |
 
-
+```
+class Test(unittest.TestCase):
+    def test1(self):
+        root = Tk()
+        c = calculator(root)
+        result_num.set("5+1")
+        result = c.calculation()
+        self.assertEqual(result, '6',"test1 fail")
+```
 
  
 
 ## 异常处理
 
- 常见的报错一般出现于除数为0的情况，以及使用科学计算时未加上括号，还有连续使用”+“，”-“等异常表达式出现的报错
+ 常见的报错一般出现于除数为0的情况，以及使用科学计算时未加上括号，还有连续使用”+“，”-“等异常表达式出现的报错，成果展示中的gif图有展示以下三种异常情况的触发
 
 ```
 except ZeroDivisionError as e:
@@ -305,4 +337,4 @@ except AttributeError:
 
 ## 心得体会
 
- 通过本次的作业感受到了，从一片空白的代码文档中开始构建一个完整的项目是与以往的PTA类的做题完全不同，相当的考验我们的信息检索能力，以及学习能力，需要临时学习许多从未接触过的知识，并且需要不断的报错中寻找解决的途径，最终优化出更好的项目
+ 通过本次的作业感受到了，从一片空白的代码文档中开始构建一个完整的项目是与以往的PTA类的做题完全不同，相当的考验我们的信息检索能力，以及学习能力，需要临时学习许多从未接触过的知识，并且需要不断的报错中寻找解决的途径，最终优化出更好的项目，虽然还存在有很多不足，但是我会想办法优化得更好的。

@@ -1,19 +1,23 @@
 import tkinter
+import unittest
 from tkinter import *
 import math
+import unittest
 
 class calculator:
-    def __init__(self):
-        root = Tk()
-        root.title("计算器")
+    def __init__(self,root):
+        self.root = root
+        self.root.title("计算器")
         #root.geometry('450x330')#该尺寸可以在底部显示eval实际执行算术式用于调试
-        root.geometry('450x290')
-        root.resizable(0,0)#锁住尺寸调整
+        self.root.geometry('450x290')
+        self.root.resizable(0,0)#锁住尺寸调整
 
         # root.attributes("-alpha",0.9)
         # root["background"] = "#ffffff"
         font_20 = ("宋体", 20)
         font_16 = ("宋体", 16)
+        global result_num
+        global result_outer
         result_num = tkinter.StringVar()
         result_outer = tkinter.StringVar()
         result_num.set("")
@@ -92,137 +96,171 @@ class calculator:
         button_sqrt.grid(row=6, column=4, padx=4, pady=2)
         button_π.grid(row=6, column=6, padx=4, pady=2)
 
+        button_one.config(command=lambda: self.click_button("1"))  # 给函数传递参数的时候用lambda
+        button_two.config(command=lambda: self.click_button("2"))
+        button_three.config(command=lambda: self.click_button("3"))
+        button_four.config(command=lambda: self.click_button("4"))
+        button_five.config(command=lambda: self.click_button("5"))
+        button_six.config(command=lambda: self.click_button("6"))
+        button_seven.config(command=lambda: self.click_button("7"))
+        button_eight.config(command=lambda: self.click_button("8"))
+        button_nine.config(command=lambda: self.click_button("9"))
+        button_zero.config(command=lambda: self.click_button("0"))
+        button_add.config(command=lambda: self.click_button("+"))
+        button_sub.config(command=lambda: self.click_button("-"))
+        button_div.config(command=lambda: self.click_button("/"))
+        button_mul.config(command=lambda: self.click_button("*"))
+        button_point.config(command=lambda: self.click_button("."))
+
+        button_sin.config(command=lambda: self.click_button("sin"))
+        button_cos.config(command=lambda: self.click_button("cos"))
+        button_tan.config(command=lambda: self.click_button("tan"))
+        button_l_bracket.config(command=lambda: self.click_button("("))
+        button_r_bracket.config(command=lambda: self.click_button(")"))
+        button_pow.config(command=lambda: self.click_button("**"))
+        button_sqrt.config(command=lambda: self.click_button("sqrt"))
+        button_log10.config(command=lambda: self.click_button("log10"))
+        button_ln.config(command=lambda: self.click_button("log"))
+        button_π.config(command=lambda: self.click_button("pi"))
+
+        button_equal.config(command=self.calculation)
+        button_clear.config(command=self.clear)
+        button_back.config(command=self.back)
+
+
         # 点击事件
-        def click_button(x):
-            #用于等号清空后同步显示结果
-            if result_num.get() == "" and result_outer.get() != "" :
-                result_outer.set("")
-            old_str = result_num.get()
-            if old_str[-1:] == "." and x == ".":#此处还需要优化，可能出现1.1.1这样的情况
-                return
-            i = ["log",'sqrt', 'sin', 'cos', 'tan','log10','pi']
-            if x in i:
-                result_num.set(result_num.get() + 'math.' + (str(x)))
-            else:
-                result_num.set(result_num.get() + (str(x)))
-
-            if x == "**":
-                result_outer.set(result_outer.get() + (str("^")))
-            elif x == "log":
-                result_outer.set(result_outer.get() + (str("ln")))
-            elif x == "pi":
-                result_outer.set(result_outer.get() + (str("π")))
-            else:
-                result_outer.set(result_outer.get() + (str(x)))
-
-
-
-        def calculation():
-            try:
-                opt_str = result_num.get()
-                result = eval(opt_str)
-                result_num.set("")
-                result_outer.set(str(result))
-            except ZeroDivisionError as e:
-                result_num.set("")
-                result_outer.set("除数不能为零")
-            except SyntaxError:
-                result_num.set("")
-                result_outer.set("运算结果存在异常")
-            except AttributeError:
-                result_num.set("")
-                result_outer.set("请加上括号")
-
-
-        def clear():
-            result_num.set("")
+    def click_button(self,x):
+        #用于等号清空后同步显示结果
+        if result_num.get() == "" and result_outer.get() != "" :
             result_outer.set("")
-        def back():
-            old_str = result_num.get()
-            old_str2 =result_outer.get()
-            i = ['log', 'sqrt', 'sin', 'cos', 'tan']
-            j = ['sqrt']
-            k = ['**','pi']
-            l = ["log10"]
-            if old_str[-3:] in i:
-                if old_str[-3:] == "log":
-                    new_str2 = old_str2.replace(old_str2[-2:], "")
-                else:
-                    new_str2 = old_str2.replace(old_str2[-3:], "")
-                new_str = old_str.replace(old_str[-8:], "")
-                result_num.set(new_str)
-                result_outer.set(new_str2)
+        old_str = result_num.get()
+        if old_str[-1:] == "." and x == ".":#此处还需要优化，可能出现1.1.1这样的情况
+            return
+        i = ["log",'sqrt', 'sin', 'cos', 'tan','log10','pi']
+        if x in i:
+            result_num.set(result_num.get() + 'math.' + (str(x)))
+        else:
+            result_num.set(result_num.get() + (str(x)))
 
-            elif old_str[-4:] in j:
-                new_str = old_str.replace(old_str[-9:], "")
-                new_str2 = old_str2.replace(old_str2[-4:], "")
-                result_num.set(new_str)
-                result_outer.set(new_str2)
-            elif old_str[-2:] in k:
-                if old_str[-2:] == "**":
-                    new_str2 = old_str2.replace(old_str2[-1:], "")
-                elif old_str[-2:] == "pi":
-                    new_str2 = old_str2.replace(old_str2[-1:], "")
-                else:
-                    new_str2 = old_str2.replace(old_str2[-2:], "")
-                new_str = old_str.replace(old_str[-7:], "")
-                result_num.set(new_str)
-                result_outer.set(new_str2)
-            elif old_str[-5:] in l:
-                new_str = old_str.replace(old_str[-10:], "")
-                new_str2 = old_str2.replace(old_str2[-5:], "")
-                result_num.set(new_str)
-                result_outer.set(new_str2)
-            elif old_str == "":
-                pass
+        if x == "**":
+            result_outer.set(result_outer.get() + (str("^")))
+        elif x == "log":
+            result_outer.set(result_outer.get() + (str("ln")))
+        elif x == "pi":
+            result_outer.set(result_outer.get() + (str("π")))
+        else:
+            result_outer.set(result_outer.get() + (str(x)))
+
+
+
+    def calculation(self):
+        try:
+            opt_str = result_num.get()
+            result = eval(opt_str)
+            result_num.set("")
+            result_outer.set(str(result))
+        except ZeroDivisionError as e:
+            result_num.set("")
+            result_outer.set("除数不能为零")
+        except SyntaxError:
+            result_num.set("")
+            result_outer.set("运算结果存在异常")
+        except AttributeError:
+            result_num.set("")
+            result_outer.set("请加上括号")
+        return result_outer.get()
+
+    def clear(self):
+        result_num.set("")
+        result_outer.set("")
+    def back(self):
+        old_str = result_num.get()
+        old_str2 =result_outer.get()
+        i = ['log', 'sqrt', 'sin', 'cos', 'tan']
+        j = ['sqrt']
+        k = ['**','pi']
+        l = ["log10"]
+        if old_str[-3:] in i:
+            if old_str[-3:] == "log":
+                new_str2 = old_str2.replace(old_str2[-2:], "")
             else:
-                new_list = list(old_str)
-                new_list2 = list(old_str2)
-                new_list.pop()
-                new_list2.pop()
-                new_str = "".join(new_list)
-                new_str2 = "".join(new_list2)
-                result_num.set(new_str)
-                result_outer.set(new_str2)
+                new_str2 = old_str2.replace(old_str2[-3:], "")
+            new_str = old_str.replace(old_str[-8:], "")
+            result_num.set(new_str)
+            result_outer.set(new_str2)
+
+        elif old_str[-4:] in j:
+            new_str = old_str.replace(old_str[-9:], "")
+            new_str2 = old_str2.replace(old_str2[-4:], "")
+            result_num.set(new_str)
+            result_outer.set(new_str2)
+        elif old_str[-2:] in k:
+            if old_str[-2:] == "**":
+                new_str2 = old_str2.replace(old_str2[-1:], "")
+            elif old_str[-2:] == "pi":
+                new_str2 = old_str2.replace(old_str2[-1:], "")
+            else:
+                new_str2 = old_str2.replace(old_str2[-2:], "")
+            new_str = old_str.replace(old_str[-7:], "")
+            result_num.set(new_str)
+            result_outer.set(new_str2)
+        elif old_str[-5:] in l:
+            new_str = old_str.replace(old_str[-10:], "")
+            new_str2 = old_str2.replace(old_str2[-5:], "")
+            result_num.set(new_str)
+            result_outer.set(new_str2)
+        elif old_str == "":
+            pass
+        else:
+            new_list = list(old_str)
+            new_list2 = list(old_str2)
+            new_list.pop()
+            new_list2.pop()
+            new_str = "".join(new_list)
+            new_str2 = "".join(new_list2)
+            result_num.set(new_str)
+            result_outer.set(new_str2)
 
 
 
 
 
+class Test(unittest.TestCase):
+    def test1(self):
+        root = Tk()
+        c = calculator(root)
+        result_num.set("5+1")
+        result = c.calculation()
+        self.assertEqual(result, '6',"test1 fail")
 
-        button_one.config(command=lambda: click_button("1"))#给函数传递参数的时候用lambda
-        button_two.config(command=lambda: click_button("2"))
-        button_three.config(command=lambda: click_button("3"))
-        button_four.config(command=lambda: click_button("4"))
-        button_five.config(command=lambda: click_button("5"))
-        button_six.config(command=lambda: click_button("6"))
-        button_seven.config(command=lambda: click_button("7"))
-        button_eight.config(command=lambda: click_button("8"))
-        button_nine.config(command=lambda: click_button("9"))
-        button_zero.config(command=lambda: click_button("0"))
-        button_add.config(command=lambda: click_button("+"))
-        button_sub.config(command=lambda: click_button("-"))
-        button_div.config(command=lambda: click_button("/"))
-        button_mul.config(command=lambda: click_button("*"))
-        button_point.config(command=lambda: click_button("."))
+    def test2(self):
+        root = Tk()
+        c = calculator(root)
+        result_num.set("math.sin(1)")
+        result = c.calculation()
+        self.assertEqual(result, '0.8414709848078965',"test2 fail")
+    def test3(self):
+        root = Tk()
+        c = calculator(root)
+        result_num.set("math.log10(10)")
+        result = c.calculation()
+        self.assertEqual(result, '1.0',"test3 fail")
 
-        button_sin.config(command=lambda: click_button("sin"))
-        button_cos.config(command=lambda: click_button("cos"))
-        button_tan.config(command=lambda: click_button("tan"))
-        button_l_bracket.config(command=lambda: click_button("("))
-        button_r_bracket.config(command=lambda: click_button(")"))
-        button_pow.config(command=lambda: click_button("**"))
-        button_sqrt.config(command=lambda: click_button("sqrt"))
-        button_log10.config(command=lambda: click_button("log10"))
-        button_ln.config(command=lambda: click_button("log"))
-        button_π.config(command=lambda: click_button("pi"))
-
-        button_equal.config(command=calculation)
-        button_clear.config(command=clear)
-        button_back.config(command=back)
-
-        root.mainloop()
-
+    def test4(self):
+        root = Tk()
+        c = calculator(root)
+        result_num.set("math.pi")
+        result = c.calculation()
+        self.assertEqual(result, '3.141592653589793',"test4 fail")
+    def test5(self):
+        root = Tk()
+        c = calculator(root)
+        result_num.set("10/0")
+        result = c.calculation()
+        self.assertEqual(result, '除数不能为零',"test5 fail")
 if __name__ == '__main__':
-    calculator()
+    #unittest.main()
+    root = Tk()
+    calculator(root)
+    root.mainloop()
 
